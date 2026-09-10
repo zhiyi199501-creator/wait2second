@@ -7,7 +7,7 @@ enum DisplaySettings {
     private static let storageKey = "button-title-v1"
 
     private static var defaults: UserDefaults {
-        UserDefaults(suiteName: SharedStore.appGroupID) ?? .standard
+        SharedStore.suite
     }
 
     static func loadButtonTitle() -> String {

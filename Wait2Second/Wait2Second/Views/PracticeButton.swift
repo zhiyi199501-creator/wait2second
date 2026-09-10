@@ -13,11 +13,6 @@ struct PracticeButton: View {
                 .frame(width: 196, height: 196)
                 .shadow(color: Theme.skyDeep.opacity(0.28), radius: 18, y: 10)
 
-            Circle()
-                .fill(Theme.heart.opacity(0.28))
-                .frame(width: 72, height: 72)
-                .offset(y: -18)
-
             Text(title)
                 .font(.custom("Songti SC", size: 36))
                 .foregroundStyle(Theme.ink)

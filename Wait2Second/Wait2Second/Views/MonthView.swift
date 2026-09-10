@@ -47,34 +47,39 @@ struct MonthView: View {
 
                 HStack(spacing: 10) {
                     statCard(value: "\(stats.total)", label: "总次数")
-                    statCard(value: "\(stats.days)", label: "练习天数")
+                    statCard(value: "\(stats.days)", label: "天数")
                     statCard(value: CalendarMath.formatAverage(stats.average), label: "日均")
                 }
                 .padding(.horizontal, 20)
 
                 VStack(spacing: 14) {
                     MonthCalendarView(ym: ym, store: store, selectedDay: $selectedDay)
-                    VStack(spacing: 6) {
-                        Text(detailText)
-                            .font(.custom("PingFang SC", size: 15))
-                            .foregroundStyle(Theme.inkMuted)
-                        ForEach(Array(timeRows.enumerated()), id: \.offset) { _, row in
-                            HStack(spacing: 0) {
-                                ForEach(0..<5, id: \.self) { index in
-                                    Text(index < row.count ? row[index] : "")
-                                        .font(.custom("PingFang SC", size: 13))
-                                        .foregroundStyle(Theme.inkMuted)
-                                        .frame(maxWidth: .infinity)
-                                        .monospacedDigit()
-                                }
-                            }
-                        }
-                    }
-                    .padding(.horizontal, 6)
                 }
                 .padding(.horizontal, 10)
                 .padding(.top, 14)
                 .padding(.bottom, 18)
+                .background(Theme.cloud.opacity(0.72), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+                .padding(.horizontal, 16)
+
+                VStack(spacing: 10) {
+                    Text(detailText)
+                        .font(.custom("PingFang SC", size: 15))
+                        .foregroundStyle(Theme.inkMuted)
+                    ForEach(Array(timeRows.enumerated()), id: \.offset) { _, row in
+                        HStack(spacing: 0) {
+                            ForEach(0..<5, id: \.self) { index in
+                                Text(index < row.count ? row[index] : "")
+                                    .font(.custom("PingFang SC", size: 13))
+                                    .foregroundStyle(Theme.inkMuted)
+                                    .frame(maxWidth: .infinity)
+                                    .monospacedDigit()
+                            }
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 16)
                 .background(Theme.cloud.opacity(0.72), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
                 .padding(.horizontal, 16)
             }
@@ -89,7 +94,7 @@ struct MonthView: View {
 
     private var detailText: String {
         guard let selectedDay else {
-            return stats.days == 0 ? "这个月还没有练习记录" : "点某一天，看当天次数"
+            return stats.total == 0 ? "这个月还没有练习记录" : "点某一天，看当天次数"
         }
         let count = store.count(on: CalendarMath.dateKey(year: ym.year, month: ym.month, day: selectedDay))
         let day = CalendarMath.monthDayLabel(month: ym.month, day: selectedDay)

@@ -31,15 +31,19 @@ struct MonthStats: Equatable {
 }
 
 enum SharedStore {
-    static let appGroupID = "group.com.wait2second.native"
+    static let appGroupID = "group.com.wait2second.app"
+    static let legacyAppGroupID = "group.com.wait2second.native"
     static let storageKey = "practice-log-v1"
 
-    private static var defaults: UserDefaults {
-        UserDefaults(suiteName: appGroupID) ?? .standard
+    private static let migratedKey = "app-group-migrated-to-app"
+
+    static var suite: UserDefaults {
+        migrateIfNeeded()
+        return UserDefaults(suiteName: appGroupID) ?? .standard
     }
 
     static func load() -> PracticeLog {
-        if let data = defaults.data(forKey: storageKey),
+        if let data = suite.data(forKey: storageKey),
            let decoded = decode(data) {
             return upgraded(decoded)
         }
@@ -56,7 +60,7 @@ enum SharedStore {
 
     static func save(_ log: PracticeLog) {
         guard let data = try? JSONEncoder().encode(log) else { return }
-        defaults.set(data, forKey: storageKey)
+        suite.set(data, forKey: storageKey)
         WidgetCenter.shared.reloadAllTimelines()
     }
 
@@ -130,18 +134,17 @@ enum SharedStore {
 
         let prefix = ym.prefix
         var total = 0
-        var days = 0
         for key in keys where key.hasPrefix(prefix) {
             let value = count(on: key, log: log)
             if value > 0 {
                 total += value
-                days += 1
             }
         }
 
+        let days = max(ym.elapsedDayCount, 1)
         return MonthStats(
             total: total,
-            days: days,
+            days: ym.elapsedDayCount,
             average: days > 0 ? Double(total) / Double(days) : 0
         )
     }
@@ -156,5 +159,23 @@ enum SharedStore {
 
     private static func decode(_ data: Data) -> PracticeLog? {
         try? JSONDecoder().decode(PracticeLog.self, from: data)
+    }
+
+    private static func migrateIfNeeded() {
+        let fresh = UserDefaults(suiteName: appGroupID)
+        guard let next = fresh, !next.bool(forKey: migratedKey) else { return }
+
+        let sources = [
+            UserDefaults(suiteName: legacyAppGroupID),
+            UserDefaults.standard,
+        ]
+        let keys = [storageKey, ReminderSettingsStore.storageKey, "button-title-v1"]
+        for source in sources {
+            guard let source else { continue }
+            for key in keys where next.object(forKey: key) == nil {
+                next.set(source.object(forKey: key), forKey: key)
+            }
+        }
+        next.set(true, forKey: migratedKey)
     }
 }

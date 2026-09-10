@@ -57,12 +57,7 @@ struct TodayView: View {
                 UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 store.increment()
             }
-            .padding(.bottom, 20)
-
-            Text("本月 \(store.thisMonth.total) 次 · \(store.thisMonth.days) 天")
-                .font(.custom("PingFang SC", size: 15))
-                .foregroundStyle(Theme.inkMuted)
-                .padding(.bottom, 12)
+            .padding(.bottom, 28)
             }
         }
         .toolbarBackground(Theme.cloud, for: .tabBar)

@@ -21,6 +21,14 @@ struct YearMonth: Equatable {
         return Calendar.current.range(of: .day, in: .month, for: Calendar.current.date(from: comps) ?? Date())?.count ?? 30
     }
 
+    /// 已过完的月份用整月天数；本月用今天是几号。
+    var elapsedDayCount: Int {
+        if isCurrent {
+            return min(CalendarMath.todayDay(), dayCount)
+        }
+        return dayCount
+    }
+
     /// Sunday = 0, matching 日一二三四五六.
     var leadingEmptyDays: Int {
         var comps = DateComponents(calendar: Calendar.current, year: year, month: month, day: 1)

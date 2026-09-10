@@ -45,7 +45,7 @@ enum ReminderSettingsStore {
     static let storageKey = "reminder-settings-v1"
 
     private static var defaults: UserDefaults {
-        UserDefaults(suiteName: SharedStore.appGroupID) ?? .standard
+        SharedStore.suite
     }
 
     static func load() -> ReminderSettings {

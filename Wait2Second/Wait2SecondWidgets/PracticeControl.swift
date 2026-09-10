@@ -4,7 +4,7 @@ import WidgetKit
 
 @available(iOS 18.0, *)
 struct PracticeControl: ControlWidget {
-    static let kind = "com.wait2second.native.control"
+    static let kind = "com.wait2second.app.control"
 
     var body: some ControlWidgetConfiguration {
         StaticControlConfiguration(kind: Self.kind) {
